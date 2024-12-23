@@ -1,0 +1,54 @@
+﻿Jordan Yen
+CS 32 Homework 4
+1e. Explain in a sentence or two what happens during the execution of test case 3 that eventually leads to test case 3 failing.
+
+
+1. In test case 3, during the iteration over v2, the vector<int>::iterator becomes invalid after v2.push_back(MAGIC) is called when k is 2. This causes undefined behavior in subsequent iterations, which eventually leads to the test case failing. The invalidation happens because adding elements to a vector may reallocate its memory, invalidating all iterators.
+
+
+3. Explain in a sentence or two why the call to Set<Coord>::insert causes at least one compilation error. (Notice that the calls to Set<int>::insert and Set<string>::insert are fine.) Don't just transcribe a compiler error message; your answer must indicate you understand the ultimate root cause of the problem and why that is connected to the call to Set<Coord>::insert.
+
+
+1. The call to Set<Coord>::insert causes a compilation error because the Coord class does not have a defined comparison operator ('<', '>', etc.) which is likely required by the Set class template to maintain its elements in a specific order, as sets usually rely on some form of ordering to ensure unique elements and efficient access. In contrast, the int and string types have built-in comparison operators that the Set template can use, which is why Set<int>::insert and Set<string>::insert work without issue.
+
+
+4b. We introduced the two-parameter overload of listAll. Why could you not solve this problem given the constraints in part a if we had only a one-parameter listAll, and you had to implement it as the recursive function?
+
+
+1. If we had only a one-parameter listAll function, implementing the recursive functionality with the given constraints would be problematic because we need to keep track of the current path during the traversal. The path needs to be passed and updated at each recursive call to form the complete pathnames correctly.
+
+
+The two-parameter overload allows us to maintain and build upon the path as we traverse deeper into the directory structure. Without the ability to pass the current path as a parameter, we would lack a mechanism to accumulate and update the path information, making it impossible to generate the correct pathnames for each file and directory.
+
+
+By having a two-parameter overload, we can keep track of the ongoing path, ensuring each recursive call has the correct context and can concatenate the appropriate directory or file names.
+
+
+5a. What is the time complexity of this algorithm, in terms of the number of basic operations (e.g., additions, assignments, comparisons) performed: Is it O(N), O(N log N), or what? Why? (Note: In this homework, whenever we ask for the time complexity, we care only about the high order term, so don't give us answers like O(N2+4N).)
+
+
+1. O(N³)
+
+
+5b. What is the time complexity of this algorithm? Why?
+
+
+1. Both the original and the optimized algorithms have a time complexity of O(N³). The optimized algorithm improves the constant factor but does not change the overall time complexity class. The constant factor is smaller due to the reduction in the number of comparisons made by skipping redundant checks.
+
+
+6a. Assume that set1, set2, and the old value of result each have N elements. In terms of the number of linked list nodes visited during the execution of this function, what is its worst case time complexity? Why?
+
+
+1. The worst-case time complexity of the non-member unite function in terms of the number of linked list nodes visited during its execution is O(N²). When result is distinct from set1 and set2, the function first assigns result to be a copy of set1. This involves iterating through all N elements of set1 and inserting them into result, which involves visiting N nodes. The function then iterates through all N elements of set2 and inserts them into result. Each insertion into result requires finding the correct position in the list, which in the worst case can take O(N) time (because the function must traverse up to N nodes to find the correct spot for each element). Thus, for each of the N elements in set2, up to N nodes may be visited to perform the insertion. Therefore, the total number of node visits in the worst case is O(N) + O(N²) = O(N²).
+
+
+6b. Assume that set1, set2, and the old value of *this each have N elements. In terms of the number of linked list nodes or ItemType objects visited during the execution of this function, what is its time complexity? Why?
+
+
+1. The time complexity of the member unite function (first version) in terms of the number of linked list nodes or ItemType objects visited during its execution is O(N log N). The function first iterates through set1 and set2, copying all their elements into a vector v. This involves visiting N nodes in each set, resulting in O(N) node visits. The vector v is then sorted, which takes O(N log N) time. After sorting, the function deletes all nodes in the current set (*this), which involves N node visits. Finally, the function inserts unique elements from the sorted vector v back into the set, resulting in N node visits. The total time complexity is dominated by the sorting step, which is O(N log N), and the other steps add up to O(N).
+
+
+6c. Assume that set1, set2, and the old value of *this each have N elements. In terms of the number of linked list nodes visited during the execution of this function, what is its time complexity? Why?
+
+
+1. The time complexity of the member unite function (second version) in terms of the number of linked list nodes visited during its execution is O(N). The function checks for aliasing and potentially assigns *this to be a copy of set1. This involves visiting N nodes if a copy is made. The function then iterates through the nodes of *this and sp (either set1 or set2), performing an ordered merge. Each list has N nodes, and the merge process involves visiting each node once. In the worst case, the function might need to insert nodes into *this during the merge. Each insertion can involve visiting nodes in the list, but since the lists are already ordered, each insertion will be at a specific position determined by the merge process. After merging the nodes from sp, any remaining nodes in sp are inserted at the end of *this, involving up to N node visits. Thus, the total number of node visits in the worst case is proportional to the number of nodes in the lists, resulting in O(N) time complexity.

@@ -1,0 +1,40 @@
+﻿Jordan Yen
+CS 32 Homework 2
+2. Given the algorithm, main function, and maze shown at the end of problem 1, what are the first 12 (r,c) coordinates popped off the stack by the algorithm?
+
+
+1. (4,3)
+2. (3,3)
+3. (5,3)
+4. (5,2)
+5. (5,1)
+6. (6,1)
+7. (7,1)
+8. (8,1)
+9. (8,2)
+10. (6,3)
+11. (4,4)
+12. (4,5)
+
+
+4. Given the same main function and maze as are shown at the end of problem 1, what are the first 12 (r,c) coordinates popped from the queue in your queue-based algorithm?
+
+
+1. (4,3) 
+2. (4,4) 
+3. (5,3) 
+4. (3,3) 
+5. (4,5) 
+6. (6,3) 
+7. (5,2) 
+8. (4,6) 
+9. (5,5) 
+10. (5,1) 
+11. (4,7) 
+12. (6,5)
+
+
+How do the two algorithms differ from each other? (Hint: how and why do they visit cells in the maze in a different order?)
+
+
+The main difference between these two algorithms comes from their data structures and exploration strategies. In the stack-based algorithm, it uses a Last In, First Out (LIFO) structure, which allows it to explore deeply into one path before considering other paths. This depth-first search (DFS) approach involves popping off the newest coordinate and then attempting moves in a specific order. If it encounters a dead end, it backtracks to explore other paths. For the queue-based algorithm, it employs a First In, First Out (FIFO) structure, exploring multiple paths simultaneously. By popping off the front coordinate, it attempts to move one unit in all directions, adhering to a breadth-first search (BFS) strategy.

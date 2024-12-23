@@ -1,0 +1,504 @@
+﻿Jordan Yen
+406224681
+CS 32 Project 2 Report
+Description of Design:
+
+
+This implementation of a doubly-linked list represents a Set data structure, where each node contains a value of type ItemType and pointers to the next and previous nodes. The list is not circular, and it does not use a dummy node. The head pointer points to the first node in the list, and each node contains a value along with pointers to its previous and next nodes.  Nodes are dynamically allocated and deallocated as elements are inserted and erased, and are ordered based on their values, with smaller values towards the head of the list and larger values towards the tail. Below is an example of an empty set and a set with nodes:
+
+
+Empty Set:
+head -> nullptr
+
+
+Set with Nodes:
+head -> [value1] <-> [value2] <-> [value3] <-> ... <-> [valueN] -> nullptr
+
+
+
+
+Pseudocode:
+
+
+Set::Set() : head(nullptr) {} Constructor: Initialize an empty set
+
+
+Set::~Set() {
+    Destructor: Deallocate memory for all nodes in the linked list
+     Loop through each node in the linked list
+     Delete each node and set its next pointer to the next node in the list
+}
+
+
+Set::Set(const Set& other) : head(nullptr) {
+    Copy constructor: Create a new set that is a copy of the 'other' set
+     Initialize the head pointer of the new set to nullptr
+     Loop through each node in the 'other' set
+     Insert each value from the 'other' set into the new set
+}
+
+
+Set& Set::operator=(const Set& other) {
+    Assignment operator: Assign the contents of another set ('other') to the current set
+     Check if the current set is not the same as the 'other' set
+     Create a temporary set 'temp' using the copy constructor with 'other'
+     Swap the contents of the current set with 'temp'
+}
+
+
+bool Set::empty() const {
+    Check if the set is empty
+     Return true if the head pointer is nullptr, indicating an empty set
+     Otherwise, return false
+}
+
+
+int Set::size() const {
+    Count the number of elements in the set
+     Initialize a counter variable to 0
+     Loop through each node in the linked list and increment the counter
+     Return the final count
+}
+
+
+bool Set::insert(const ItemType& value) {
+    Insert a value into the set if it doesn't already exist
+     Check if the value already exists in the set using the contains() function
+     If the value already exists, return false
+     Otherwise, create a new node with the value
+     Insert the new node at the correct position in the linked list to maintain order
+     Return true to indicate successful insertion
+}
+
+
+bool Set::erase(const ItemType& value) {
+    Remove a value from the set if it exists
+     Loop through each node in the linked list
+     If the node contains the value to be erased, remove it from the list and deallocate its memory
+     Return true if the value was found and removed, otherwise return false
+}
+
+
+bool Set::contains(const ItemType& value) const {
+    Check if a value exists in the set
+     Loop through each node in the linked list
+     If the value is found in any node, return true
+     If the value is not found after looping through all nodes, return false
+}
+
+
+bool Set::get(int pos, ItemType& value) const {
+    Retrieve the value at a specified position in the set
+     Check if the given position is within the bounds of the set (between 0 and size() - 1)
+     Traverse the linked list to the desired position
+     Retrieve the value at the specified position and store it in the 'value' parameter
+     Return true to indicate successful retrieval
+     If the position is out of bounds, return false
+}
+
+
+void Set::swap(Set& other) {
+    Swap the contents of two sets
+     Swap the head pointers of the two sets
+}
+
+
+void Set::dump() const {
+    Print the values of all elements in the set for debugging
+     Loop through each node in the linked list
+     Print the value of each node to cerr
+}
+
+
+void unite(const Set& s1, const Set& s2, Set& result) {
+    Create a new set containing the union of elements from sets 's1' and 's2'
+     Create a new set 'temp' initialized with the elements of 's1'
+     Loop through each element in 's2'
+     Insert each element of 's2' into 'temp' if it's not already present
+     Assign 'temp' to the 'result' set
+}
+
+
+void inOnlyOne(const Set& s1, const Set& s2, Set& result) {
+    Create a new set containing elements that exist in only one of the sets 's1' or 's2', but not both
+     Create an empty set 'temp'
+     Loop through each element in 's1'
+     If the element is not present in 's2', insert it into 'temp'
+     Loop through each element in 's2'
+     If the element is not present in 's1', insert it into 'temp'
+     Assign 'temp' to the 'result' set
+}
+
+
+
+
+Test Data (credit to Professor Smallberg and @ghosterixx on Discord for test case inspiration):
+
+
+Test Case
+	Test
+	Reason
+	1
+	#if TESTNUM == 1 // Tests to make sure every function is implemented and builds correctly
+#include "Set.h"
+#include <type_traits>
+#include <iostream>
+
+
+#define CHECKTYPE(c, f, r, a)  \
+        {  \
+         static_assert(std::is_same<decltype(&c::f), r (c::*)a>::value, \
+             "You did not declare " #c "::" #f " as the Project 2 spec does");  \
+         auto p = static_cast<r (c::*)a>(&c::f);  \
+         (void) p;  \
+        }
+#define CHECKTYPENONMEMBER(f, t)  \
+        {  \
+         static_assert(std::is_same<decltype(f), t>::value, \
+             "You did not declare " #f " as the Project 2 spec does");  \
+         auto p = static_cast<std::add_pointer<t>::type>(f);  \
+         (void) p;  \
+        }
+
+
+static_assert(std::is_default_constructible<Set>::value,
+    "Set must be default-constructible.");
+static_assert(std::is_copy_constructible<Set>::value,
+    "Set must be copy-constructible.");
+static_assert(std::is_copy_assignable<Set>::value,
+    "Set must be assignable.");
+static_assert(std::is_same<decltype(*(Set*)(0) = Set()), Set&>::value,
+    "Set::operator= return type should be Set&");
+
+
+void thisFunctionWillNeverBeCalled()
+{
+    CHECKTYPE(Set, empty, bool, () const);
+    CHECKTYPE(Set, size, int, () const);
+    CHECKTYPE(Set, insert, bool, (const ItemType&));
+    CHECKTYPE(Set, erase, bool, (const ItemType&));
+    CHECKTYPE(Set, contains, bool, (const ItemType&) const);
+    CHECKTYPE(Set, get, bool, (int, ItemType&) const);
+    CHECKTYPE(Set, swap, void, (Set&));
+    CHECKTYPENONMEMBER(unite, void(const Set&, const Set&, Set&));
+    CHECKTYPENONMEMBER(inOnlyOne, void(const Set&, const Set&, Set&));
+}
+
+
+int main()
+{
+    std::cout << "First Test Passed." << std::endl;
+}
+
+
+	* This test case verifies that all functions in the Set class are implemented correctly according to the Project 2 spec.
+* It also ensures that the Set class is default-constructible, copy-constructible, and copy-assignable, and that the operator= returns the correct type.
+
+
+	2
+	#elif TESTNUM == 2 // Tests default constructor
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main()
+{
+    Set test2;
+    assert(test2.size() == 0); // Ensures set size is 0
+    assert(test2.empty()); // Ensures empty function works
+    assert(!test2.contains("")); // Ensures set has no "default" value
+    std::cout << "Second Test passed." << std::endl;
+}
+
+
+	* This test case verifies that the default constructor of the Set class initializes a set with size 0 and that its empty() function correctly indicates an empty set.
+* It ensures that the default-constructed set does not contain any default value by checking that the contains() function returns false for an arbitrary value.
+	3
+	#elif TESTNUM == 3 // Tests insert function
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main()
+{
+    Set test3;
+    test3.insert("Fish");
+    test3.insert("Shark");
+    assert(!test3.insert("Fish")); // Tests duplicate prevention and correct bool return
+    test3.insert("Whale");
+    assert(test3.insert("")); // Ensures empty string behaves correctly and correct bool return
+    assert(test3.size() == 4); // Ensures size is correctly updated
+    assert(test3.contains("Fish") && test3.contains("Whale") && test3.contains("Shark"));
+    std::cout << "Third Test passed." << std::endl;
+}
+
+
+	* This test case checks whether the insert() function of the Set class correctly inserts elements into the set and returns the right boolean value to indicate success/failure.
+* It ensures that the insert() function prevents duplicates from being added to the set and correctly updates the size of the set when new elements are inserted.
+	4
+	#elif TESTNUM == 4 // Tests erase function
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main()
+{
+    Set test4;
+    test4.insert("Fish");
+    test4.insert("Shark");
+    test4.insert("");
+    assert(test4.erase("")); // Tests erase for item in set and ensures correct bool return  
+    assert(test4.size() == 2); // Ensures size is correctly updated
+    assert(test4.contains("Fish") && test4.contains("Shark") && !test4.contains("")); // Verify set is updated
+    assert(!test4.erase("")); // Tests erase for item not in set and ensures correct bool return
+    assert(test4.size() == 2); // Ensures size is unchanged
+    assert(test4.contains("Fish") && test4.contains("Shark") && !test4.contains("")); // Ensures set is unchanged
+    std::cout << "Fourth Test passed." << std::endl;
+}
+	* This test case verifies that the erase() function correctly removes an item from the set and returns true to indicate successful removal.
+* It ensures that the erase() function returns false and leaves the set unchanged when attempting to erase an item that’s not present in the set.
+	5
+	#elif TESTNUM == 5 // Tests get function
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+#include <string>
+
+
+int main()
+{
+    Set test5;
+    test5.insert("Fish");
+    test5.insert("Shark");
+    test5.insert("Whale");
+    std::string value;
+    assert(test5.get(0, value)); // Tests correct bool return 
+    assert(value == "Whale");                        // Ensures get function follows correct behavior
+    assert(test5.get(1, value) && value == "Shark"); // ^
+    assert(test5.get(2, value) && value == "Fish");  // ^
+    assert(!test5.get(-1, value) && value == "Fish"); // Tests correct bool return and behavior for negative parameter
+    assert(!test5.get(3, value) && value == "Fish"); // Tests correct bool return and behavior for unmet condition
+    std::cout << "Fifth Test passed." << std::endl;
+}
+
+
+	* This test case verifies the correctness of the get() function by ensuring it returns the correct value for a given index and returns true to indicate successful retrieval.
+* It also tests the behavior of the get() function when provided with negative indices and indices exceeding the size of the set, ensuring it returns false and leaves the value parameter unchanged in these cases.
+	6
+	#elif TESTNUM == 6 // Tests swap function
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main()
+{
+    Set test6a;
+    test6a.insert("Fish");
+    test6a.insert("Shark");
+    test6a.insert("Whale");
+    Set test6b;
+    test6b.insert("Octopus");
+    test6b.insert("Dolphin");
+    test6a.swap(test6b); // Swaps two non-empty sets
+    assert(test6a.size() == 2); // Verifies size of a
+    assert(test6a.contains("Octopus") && test6a.contains("Dolphin")); // Verifies content of a
+    assert(test6b.size() == 3); // Verifies size of b
+    assert(test6b.contains("Fish") && test6b.contains("Shark") && test6b.contains("Whale")); // Verifies content of b
+    Set test6c;
+    test6a.swap(test6c); // Swaps one non-empty set and one empty set and proceeds to verify sizes and content
+    assert(test6a.empty());
+    assert(!test6a.contains("Octopus") && !test6a.contains("Dolphin"));
+    assert(test6c.size() == 2);
+    assert(test6c.contains("Octopus") && test6c.contains("Dolphin"));
+    std::cout << "Sixth Test passed." << std::endl;
+}
+
+
+	* This test case verifies the correctness of the swap() function by swapping the contents of two sets and ensuring that their sizes and contents are correctly updated.
+* It also tests the behavior of the swap() function when one of the sets is empty, ensuring that the non-empty set swaps its contents with the empty set, leaving the latter with the swapped contents and the former empty.
+	7
+	#elif TESTNUM == 7 // Tests copy constructor
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main()
+{
+    Set test7a;
+    test7a.insert("Fish");
+    test7a.insert("Shark");
+    test7a.insert("Whale");
+    Set test7b(test7a); // Envokes copy constructor
+    assert(test7a.size() == 3); // Ensure original set is unchanged
+    assert(test7a.contains("Fish") && test7a.contains("Shark") && test7a.contains("Whale"));
+    assert(test7b.size() == 3); // Ensure copy is identical
+    assert(test7b.contains("Fish") && test7b.contains("Shark") && test7b.contains("Whale"));
+    test7b.erase("Fish"); // Erase item from copy only
+    assert(test7a.contains("Fish") && !test7b.contains("Fish")); // Ensure aliasing has not occurred
+    Set test7c; // Same test but for empty sets
+    Set test7d(test7c);
+    assert(test7c.empty() && test7d.empty());
+    std::cout << "Seventh Test passed." << std::endl;
+}
+
+
+	* This test case verifies the correctness of the copy constructor by creating a copy of a set and ensuring that the copy contains the same elements as the original.
+* It also checks for aliasing issues by modifying the copy and ensuring that the original set remains unchanged.
+	8
+	#elif TESTNUM == 8 // Tests assignment operator
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main()
+{
+    Set test8a;
+    test8a.insert("Fish");
+    test8a.insert("Shark");
+    Set test8b;
+    test8b = test8a; // Envoke assignment (empty = non-empty)
+    assert(test8a.size() == 2); // Ensure original set is unchanged
+    assert(test8a.contains("Fish") && test8a.contains("Shark"));
+    assert(test8b.size() == 2); // Ensure new set is identical
+    assert(test8b.contains("Fish") && test8b.contains("Shark"));
+    test8b.erase("Fish"); // Erase item from copy only
+    assert(test8a.contains("Fish") && !test8b.contains("Fish")); // Ensure aliasing has not occurred
+    test8a = test8b; // Envoke assignment (non-empty = smaller non-empty)
+    assert(test8b.size() == 1); // Ensure original set is unchanged
+    assert(test8b.contains("Shark"));
+    assert(test8a.size() == 1); // Ensure new set is identical
+    assert(!test8a.contains("Fish") && test8a.contains("Shark")); // Make sure extra item in new set was deleted
+    Set test8c;
+    test8a = test8c; // Envoke assignment (non-empty = empty)
+    assert(test8a.empty() && test8c.empty());
+    assert(!test8a.contains("Shark") && !test8c.contains("Shark"));
+    test8a.insert("Fish");
+    assert(test8a.contains("Fish") && !test8c.contains("Fish")); // Test for aliasing again
+    std::cout << "Eighth Test passed." << std::endl;
+}
+
+
+	* This test case verifies the correctness of the assignment operator by assigning one set to another and ensuring that the assignment behaves correctly for various scenarios.
+* It also checks for aliasing issues by modifying one set after assignment and ensuring that the other set remains unchanged.
+	9
+	#elif TESTNUM == 9 // Tests unite function
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main()
+{
+    Set test9a;
+    test9a.insert("Fish");
+    test9a.insert("Shark");
+    test9a.insert("Whale");
+    Set test9b;
+    test9b.insert("Fish");
+    test9b.insert("Octopus");
+    test9b.insert("Dolphin");
+    Set test9c;
+    unite(test9a, test9b, test9c); // Envoke unite with empty result set
+    assert(test9c.size() == 5);
+    assert(test9c.contains("Fish") && test9c.contains("Shark") && test9c.contains("Whale"));
+    assert(test9c.contains("Octopus") && test9c.contains("Dolphin"));
+    test9b.insert("Seal");
+    unite(test9a, test9b, test9c); // Envoke unite with non-empty result set
+    assert(test9c.size() == 6);
+    assert(test9c.contains("Fish") && test9c.contains("Shark") && test9c.contains("Whale"));
+    assert(test9c.contains("Octopus") && test9c.contains("Dolphin") && test9c.contains("Seal"));
+    unite(test9a, test9b, test9a); // Envoke unite with aliasing
+    assert(test9a.size() == 6);
+    assert(test9a.contains("Fish") && test9a.contains("Shark") && test9a.contains("Whale"));
+    assert(test9a.contains("Octopus") && test9a.contains("Dolphin") && test9a.contains("Seal"));
+    std::cout << "Ninth Test passed." << std::endl;
+}
+	* This test case verifies the correctness of the unite function by testing its behavior with both empty and non-empty result sets, ensuring that it correctly unites the elements from two input sets into the result set.
+* It also checks for aliasing issues by invoking the unite function with one of the input sets being the same as the result set, ensuring that the function behaves correctly without modifying the input sets.
+	10
+	#elif TESTNUM == 10 // Tests inOnlyOne function
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main()
+{
+    Set test10a;
+    test10a.insert("Fish"); 
+    test10a.insert("Shark"); 
+    test10a.insert("Whale"); 
+    Set test10b;
+    test10b.insert("Fish"); 
+    test10b.insert("Shark"); 
+    test10b.insert("Seal"); 
+    Set test10c; 
+    inOnlyOne(test10a, test10b, test10c); // Envoke inOnlyOne with empty result set
+    assert(test10c.size() == 2);
+    assert(test10c.contains("Whale") && test10c.contains("Seal"));
+    assert(!test10c.contains("Fish") && !test10c.contains("Shark"));
+    test10b.insert("Seagull");
+    inOnlyOne(test10a, test10b, test10c); // Envoke inOnlyOne with non-empty result set
+    assert(test10c.size() == 3);
+    assert(test10c.contains("Whale") && test10c.contains("Seal") && test10c.contains("Seagull"));
+    assert(!test10c.contains("Fish") && !test10c.contains("Shark"));
+    inOnlyOne(test10a, test10b, test10a); // Envoke inOnlyOne with aliasing
+    assert(test10a.size() == 3);
+    assert(test10a.contains("Whale") && test10a.contains("Seal") && test10a.contains("Seagull"));
+    assert(!test10a.contains("Fish") && !test10a.contains("Shark"));
+    std::cout << "Tenth Test passed." << std::endl;
+}
+
+
+	* This test case tests the correctness of the inOnlyOne function by testing its behavior with both empty and non-empty result sets, ensuring that it correctly identifies and includes only the elements that exist in one of the input sets but not in both.
+* It checks for aliasing issues by invoking the inOnlyOne function with one of the input sets being the same as the result set, ensuring that the function behaves correctly without modifying the input sets.
+	11
+	#elif TESTNUM == 11 // Tests with different ItemType
+#include "Set.h"
+#include <cassert>
+#include <iostream>
+
+
+int main() 
+{
+    Set test11a;
+    assert(test11a.size() == 0 && test11a.empty());
+    assert(test11a.insert(1) && test11a.insert(2) && test11a.insert(3) && !test11a.insert(1));
+    assert(test11a.contains(1) && !test11a.contains(0));
+    Set test11b(test11a);
+    assert(test11b.erase(1) && test11b.size() == 2 && !test11b.erase(0));
+    test11b = test11a;
+    assert(test11a.size() == 3 and test11b.size() == 3);
+    unsigned long x;
+    assert(test11a.get(0, x) && x == 3 && !test11a.get(-1,x));
+    test11b.erase(x);
+    test11a.swap(test11b);
+    assert(test11a.size() == 2 && test11b.size() == 3);
+    Set test11c;
+    unite(test11a, test11b, test11c);
+    assert(test11c.size() == 3);
+    test11c.insert(4);
+    unite(test11a, test11b, test11c);
+    assert(test11c.size() == 3);
+    unite(test11a, test11b, test11a);
+    assert(test11a.size() == 3);
+    test11b.insert(10);
+    test11b.insert(11);
+    Set test11d;
+    inOnlyOne(test11a, test11b, test11d);
+    assert(test11d.size() == 2);
+    test11b.insert(12);
+    inOnlyOne(test11a, test11b, test11d);
+    assert(test11d.size() == 3);
+    inOnlyOne(test11a, test11b, test11a);
+    assert(test11a.size() == 3);
+    std::cout << "Eleventh Test passed." << std::endl;
+}
+	* This test case evaluates the functionality of the Set class when instantiated with a different ItemType (such as unsigned long). It verifies that basic operations like insertion, erasure, containment check, and retrieval work correctly with integer elements.
+* Additionally, it tests the Set class methods such as swap, unite, and inOnlyOne when dealing with sets containing elements of ints, ensuring that they maintain correct behavior of the ItemType.
